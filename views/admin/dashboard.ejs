@@ -1,0 +1,115 @@
+<%- include("../partials/header") %>
+
+<div class="container mt-4">
+
+  <h2 class="fw-bold mb-4">Admin Dashboard</h2>
+
+  <!-- USERS -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold bg-light">
+      Users
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead class="table-secondary">
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(u => { %>
+            <tr>
+              <td><%= u.name %></td>
+              <td><%= u.phone %></td>
+              <td class="text-end">
+                <a href="/admin/delete/user/<%= u._id %>" class="btn btn-sm btn-danger">
+                  Delete
+                </a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SERVICE PROVIDERS -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold bg-light">
+      Service Providers
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead class="table-secondary">
+          <tr>
+            <th>Name</th>
+            <th>Service</th>
+            <th>Location</th>
+            <th>Phone</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% providers.forEach(p => { %>
+            <tr>
+              <td class="fw-semibold"><%= p.name %></td>
+              <td><%= p.service %></td>
+              <td><%= p.location %></td>
+              <td><%= p.phone %></td>
+              <td class="text-end">
+                <a href="/admin/delete/provider/<%= p._id %>" class="btn btn-sm btn-danger">
+                  Delete
+                </a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- BOOKINGS -->
+  <div class="card shadow-sm mb-5">
+    <div class="card-header fw-bold bg-light">
+      Bookings
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead class="table-secondary">
+          <tr>
+            <th>Service</th>
+            <th>User</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% bookings.forEach(b => { %>
+            <tr>
+              <td><%= b.service %></td>
+              <td><%= b.userName %></td>
+              <td>
+                <span class="badge
+                  <%= b.status === 'accepted' ? 'bg-success' :
+                      b.status === 'pending' ? 'bg-warning text-dark' :
+                      'bg-danger' %>">
+                  <%= b.status %>
+                </span>
+              </td>
+              <td class="text-end">
+                <a href="/admin/delete/booking/<%= b._id %>" class="btn btn-sm btn-danger">
+                  Delete
+                </a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<%- include("../partials/footer") %>

@@ -1,0 +1,15 @@
+<%- include("partials/header") %>
+
+<h2>Book <%= provider.name %></h2>
+
+<form method="POST" action="/book">
+  <input type="hidden" name="providerName" value="<%= provider.name %>">
+  <input type="hidden" name="service" value="<%= provider.service %>">
+
+  <input class="form-control mb-2" name="customerName" placeholder="Your Name" required>
+  <input class="form-control mb-2" name="customerPhone" placeholder="Phone Number" required>
+
+  <button class="btn btn-success">Confirm Booking</button>
+</form>
+
+<%- include("partials/footer") %>

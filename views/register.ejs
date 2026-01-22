@@ -1,0 +1,131 @@
+<%- include("partials/header") %>
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow">
+      <div class="card-body p-4">
+        <h3 class="text-center mb-4">Create Account</h3>
+
+        <form method="POST" action="/register">
+
+          <!-- Name -->
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input
+              class="form-control"
+              name="name"
+              placeholder="Your full name"
+              required
+            />
+          </div>
+
+          <!-- Phone -->
+          <div class="mb-3">
+            <label class="form-label">Mobile Number</label>
+            <input
+              class="form-control"
+              name="phone"
+              placeholder="10-digit mobile number"
+              required
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              name="email"
+              placeholder="example@email.com"
+              required
+            />
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              name="password"
+              required
+            />
+          </div>
+
+          <!-- Role -->
+          <div class="mb-3">
+            <label class="form-label">Account Type</label>
+            <select
+              class="form-select"
+              name="role"
+              id="role"
+              onchange="toggleFields()"
+              required
+            >
+              <option value="user">User</option>
+              <option value="provider">Service Provider</option>
+            </select>
+          </div>
+
+          <!-- USER ADDRESS -->
+          <div class="mb-3" id="userAddress">
+            <label class="form-label">Address</label>
+            <textarea
+              class="form-control"
+              name="address"
+              placeholder="House no, street, area, landmark"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <!-- PROVIDER-ONLY FIELDS -->
+          <div id="providerFields" style="display: none;">
+            <div class="mb-3">
+              <label class="form-label">Service Name</label>
+              <input
+                class="form-control"
+                name="service"
+                placeholder="e.g. Electrician, Plumber"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Service Location</label>
+              <input
+                class="form-control"
+                name="location"
+                placeholder="Area / City"
+              />
+            </div>
+          </div>
+
+          <button class="btn btn-success w-100 mt-3">
+            Register
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleFields() {
+    const role = document.getElementById("role").value;
+    const providerFields = document.getElementById("providerFields");
+    const userAddress = document.getElementById("userAddress");
+
+    if (role === "provider") {
+      providerFields.style.display = "block";
+      userAddress.style.display = "none";
+    } else {
+      providerFields.style.display = "none";
+      userAddress.style.display = "block";
+    }
+  }
+
+  // Run once on page load
+  toggleFields();
+</script>
+
+<%- include("partials/footer") %>

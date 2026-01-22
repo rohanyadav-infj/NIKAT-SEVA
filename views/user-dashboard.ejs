@@ -1,0 +1,87 @@
+<%- include("partials/header") %>
+<form method="GET" action="/providers" class="mb-4">
+  <div class="input-group shadow-soft">
+    <input
+      type="text"
+      name="q"
+      class="form-control"
+      placeholder="Search services or providers"
+    >
+    <button class="btn btn-success px-4">
+      Search
+    </button>
+  </div>
+</form>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Welcome, <%= user.name %></h2>
+  <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+</div>
+
+<hr>
+
+<h4 class="mb-3">Available Service Providers</h4>
+
+<div class="row">
+  <% providers.forEach(p => { %>
+    <div class="col-md-4">
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title"><%= p.name %></h5>
+          <p class="card-text">
+            <strong>Service:</strong> <%= p.service %><br>
+            <strong>Location:</strong> <%= p.location %>
+          </p>
+
+          <form method="POST" action="/book/<%= p._id %>">
+            <input type="hidden" name="service" value="<%= p.service %>">
+            <button class="btn btn-success btn-sm w-100">Book</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<hr class="mt-5">
+
+<h4>Your Bookings</h4>
+
+<% if (bookings.length === 0) { %>
+  <p class="text-muted">No bookings yet.</p>
+<% } else { %>
+  <div class="list-group">
+    <% bookings.forEach(b => { %>
+      <div class="list-group-item mb-2">
+        <div class="d-flex justify-content-between">
+          <div>
+            <strong><%= b.service %></strong><br>
+            <span class="text-muted">
+              Provider:
+<%= b.providerName || (b.providerId && b.providerId.name) || "N/A" %>
+(
+<%= b.providerPhone || (b.providerId && b.providerId.phone) || "N/A" %>
+)
+
+
+            </span>
+          </div>
+
+          <span class="badge
+            <%= b.status === 'accepted' ? 'bg-success' :
+                b.status === 'pending' ? 'bg-warning text-dark' :
+                b.status === 'rejected' ? 'bg-danger' : 'bg-secondary' %>">
+            <%= b.status %>
+          </span>
+        </div>
+
+        <small class="text-muted">
+          Booked on: <%= new Date(b.createdAt).toLocaleString() %>
+        </small>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+
+
+<%- include("partials/footer") %>

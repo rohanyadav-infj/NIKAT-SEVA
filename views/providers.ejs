@@ -1,0 +1,48 @@
+<%- include("partials/header") %>
+<form method="GET" action="/providers" class="mb-4">
+  <div class="input-group shadow-soft">
+    <input
+      type="text"
+      name="q"
+      class="form-control"
+      placeholder="Search by service, provider name or location"
+      value="<%= searchQuery %>"
+    >
+    <button class="btn btn-success px-4">
+      Search
+    </button>
+  </div>
+</form>
+
+<h2 class="mb-4">Available Service Providers</h2>
+
+<div class="row">
+  <% if (providers.length === 0) { %>
+    <p class="text-muted">No providers available.</p>
+  <% } %>
+
+  <% providers.forEach(p => { %>
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <h5 class="card-title"><%= p.name %></h5>
+
+          <p class="card-text">
+            <strong>Service:</strong> <%= p.service %><br>
+            <strong>Location:</strong> <%= p.location %><br>
+            <strong>Phone:</strong> <%= p.phone %>
+          </p>
+
+          <form method="POST" action="/book/<%= p._id %>">
+            <input type="hidden" name="service" value="<%= p.service %>">
+            <button class="btn btn-success btn-sm w-100">
+              Book Service
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<%- include("partials/footer") %>

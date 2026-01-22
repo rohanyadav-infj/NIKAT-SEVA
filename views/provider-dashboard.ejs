@@ -1,0 +1,77 @@
+<%- include("partials/header") %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">Provider Dashboard</h2>
+    <p class="text-muted mb-0">
+      Welcome, <%= user.name %> — <%= user.service %> (<%= user.location %>)
+    </p>
+  </div>
+
+  <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+</div>
+
+<hr>
+
+<h4 class="mb-3">Bookings Received</h4>
+
+<% if (bookings.length === 0) { %>
+  <p class="text-muted">No bookings yet.</p>
+<% } else { %>
+
+  <% bookings.forEach(b => { %>
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+
+        <!-- Service + Status -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <strong class="fs-5"><%= b.service %></strong>
+
+          <span class="badge
+            <%= b.status === 'accepted' ? 'bg-success' :
+                b.status === 'pending' ? 'bg-warning text-dark' :
+                'bg-secondary' %>">
+            <%= b.status %>
+          </span>
+        </div>
+
+        <!-- Customer Info -->
+        <p class="mb-1">
+          <strong>Customer:</strong> <%= b.userName %>
+        </p>
+
+        <p class="mb-1">
+          <strong>Phone:</strong> <%= b.userPhone %>
+        </p>
+
+        <p class="mb-2">
+          <strong>Address:</strong><br>
+          <span class="text-muted">
+            <%= b.userAddress || "Address not provided" %>
+          </span>
+        </p>
+
+        <!-- Booking Time -->
+        <p class="text-muted small mb-3">
+          Booked on: <%= new Date(b.createdAt).toLocaleString() %>
+        </p>
+
+        <!-- Actions -->
+        <% if (b.status === "pending") { %>
+          <div class="d-flex gap-2">
+            <a href="/accept/<%= b._id %>" class="btn btn-success btn-sm w-50">
+              Accept
+            </a>
+            <a href="/reject/<%= b._id %>" class="btn btn-outline-danger btn-sm w-50">
+              Reject
+            </a>
+          </div>
+        <% } %>
+
+      </div>
+    </div>
+  <% }) %>
+
+<% } %>
+
+<%- include("partials/footer") %>
