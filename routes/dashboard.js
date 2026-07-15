@@ -1,40 +1,49 @@
 const express = require("express");
 const Booking = require("../models/Booking");
 const User = require("../models/User");
+const {
+    authenticateToken,
+    authorizeRoles,
+} = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get("/dashboard", async (req, res) => {
-    if (!req.session.user) return res.redirect("/login");
+router.get(
+    "/dashboard",
+    authenticateToken,
+    authorizeRoles("user", "provider"),
+    async (req, res) => {
+        const user = await User.findById(req.user.userId);
 
-    const user = req.session.user;
+        if (!user) {
+            res.clearCookie("token");
+            return res.redirect("/login");
+        }
 
-    // USER DASHBOARD
-    if (user.role === "user") {
-        const bookings = await Booking.find({ userId: user._id }).populate(
-            "providerId"
-        );
+        if (user.role === "user") {
+            const bookings = await Booking.find({ userId: user._id }).populate(
+                "providerId"
+            );
+            const providers = await User.find({ role: "provider" });
 
-        const providers = await User.find({ role: "provider" });
+            return res.render("user-dashboard", {
+                user,
+                bookings,
+                providers,
+            });
+        }
 
-        return res.render("user-dashboard", {
-            user,
-            bookings,
-            providers, // ✅ THIS WAS MISSING
-        });
+        if (user.role === "provider") {
+            const bookings = await Booking.find({ providerId: user._id });
+
+            return res.render("provider-dashboard", {
+                user,
+                bookings,
+            });
+        }
+
+        return res.status(401).send("Unauthorized");
     }
-
-    // PROVIDER DASHBOARD
-    if (user.role === "provider") {
-        const bookings = await Booking.find({ providerId: user._id });
-
-        return res.render("provider-dashboard", {
-            user,
-            bookings,
-        });
-    }
-
-    res.send("Invalid role");
-});
+);
 
 module.exports = router;

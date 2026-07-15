@@ -1,7 +1,23 @@
 const express = require("express");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const dotenv = require("dotenv");
 const session = require("express-session");
+const { attachUserIfPresent } = require("./middleware/authMiddleware");
+const xssSanitizer = require("./middleware/xssSanitizer");
+
+dotenv.config();
+
+if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is required");
+}
+
+if (!process.env.SESSION_SECRET) {
+    throw new Error("SESSION_SECRET is required");
+}
 
 const app = express();
 
@@ -13,14 +29,23 @@ app.set("view engine", "ejs");
 // -------------------
 // MIDDLEWARE
 // -------------------
+app.use(
+    helmet({
+        contentSecurityPolicy: false,
+    })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(mongoSanitize());
+app.use(xssSanitizer);
+app.use(cookieParser());
+app.use(attachUserIfPresent);
 
 app.use(
     session({
-        secret: "nikatseva_secret",
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: true,
     })
@@ -28,8 +53,8 @@ app.use(
 
 // Make user/admin available in ALL views
 app.use((req, res, next) => {
-    res.locals.user = req.session.user || null;
-    res.locals.admin = req.session.admin || null;
+    res.locals.user = req.user || null;
+    res.locals.admin = req.user?.role === "admin";
     next();
 });
 
@@ -37,7 +62,7 @@ app.use((req, res, next) => {
 // DATABASE
 // -------------------
 mongoose
-    .connect("mongodb://127.0.0.1:27017/nikatsevaDB")
+    .connect(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/nikatsevaDB")
     .then(() => console.log("MongoDB Connected"))
     .catch((err) => console.log(err));
 
@@ -56,6 +81,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
+    res.clearCookie("token");
     req.session.destroy(() => {
         res.redirect("/login");
     });

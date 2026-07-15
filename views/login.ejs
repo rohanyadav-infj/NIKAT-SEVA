@@ -6,10 +6,22 @@
       <div class="card-body p-4">
         <h3 class="text-center mb-4">Login</h3>
 
+        <% if (error) { %>
+          <div class="alert alert-danger" role="alert">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <% if (message) { %>
+          <div class="alert alert-success" role="alert">
+            <%= message %>
+          </div>
+        <% } %>
+
         <form method="POST" action="/login">
           <div class="mb-3">
             <label class="form-label">Email</label>
-            <input class="form-control" name="email" required />
+            <input class="form-control" name="email" value="<%= email || '' %>" required />
           </div>
 
           <div class="mb-3">
@@ -21,8 +33,18 @@
         </form>
 
         <p class="text-center mt-3">
-          Don’t have an account?
+          Don't have an account?
           <a href="/register">Register</a>
+        </p>
+
+        <p class="text-center mt-2">
+          <a href="/forgot-password">Forgot password?</a>
+        </p>
+
+        <p class="text-center mt-2">
+          <a href="/resend-verification<%= resendEmail ? '?email=' + encodeURIComponent(resendEmail) : '' %>">
+            Resend verification email
+          </a>
         </p>
       </div>
     </div>

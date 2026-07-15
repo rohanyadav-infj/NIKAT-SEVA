@@ -6,6 +6,12 @@
       <div class="card-body p-4">
         <h3 class="text-center mb-4">Create Account</h3>
 
+        <% if (error) { %>
+          <div class="alert alert-danger" role="alert">
+            <%= error %>
+          </div>
+        <% } %>
+
         <form method="POST" action="/register">
 
           <!-- Name -->
@@ -15,6 +21,7 @@
               class="form-control"
               name="name"
               placeholder="Your full name"
+              value="<%= formData.name || '' %>"
               required
             />
           </div>
@@ -26,6 +33,7 @@
               class="form-control"
               name="phone"
               placeholder="10-digit mobile number"
+              value="<%= formData.phone || '' %>"
               required
             />
           </div>
@@ -38,6 +46,7 @@
               class="form-control"
               name="email"
               placeholder="example@email.com"
+              value="<%= formData.email || '' %>"
               required
             />
           </div>
@@ -48,9 +57,18 @@
             <input
               type="password"
               class="form-control"
+              id="password"
               name="password"
+              minlength="8"
               required
             />
+            <div class="form-text">
+              Password must be at least 8 characters and include an uppercase letter, lowercase letter, number, and special character.
+            </div>
+            <div class="mt-2 small">
+              Strength:
+              <span id="passwordStrength" class="fw-semibold text-muted">Weak</span>
+            </div>
           </div>
 
           <!-- Role -->
@@ -63,8 +81,8 @@
               onchange="toggleFields()"
               required
             >
-              <option value="user">User</option>
-              <option value="provider">Service Provider</option>
+              <option value="user" <%= (formData.role || "user") === "user" ? "selected" : "" %>>User</option>
+              <option value="provider" <%= formData.role === "provider" ? "selected" : "" %>>Service Provider</option>
             </select>
           </div>
 
@@ -76,7 +94,7 @@
               name="address"
               placeholder="House no, street, area, landmark"
               rows="3"
-            ></textarea>
+            ><%= formData.address || '' %></textarea>
           </div>
 
           <!-- PROVIDER-ONLY FIELDS -->
@@ -87,6 +105,7 @@
                 class="form-control"
                 name="service"
                 placeholder="e.g. Electrician, Plumber"
+                value="<%= formData.service || '' %>"
               />
             </div>
 
@@ -96,6 +115,7 @@
                 class="form-control"
                 name="location"
                 placeholder="Area / City"
+                value="<%= formData.location || '' %>"
               />
             </div>
           </div>
@@ -124,8 +144,38 @@
     }
   }
 
+  function updatePasswordStrength() {
+    const password = document.getElementById("password").value;
+    const strengthLabel = document.getElementById("passwordStrength");
+
+    let score = 0;
+
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+
+    if (score <= 2) {
+      strengthLabel.textContent = "Weak";
+      strengthLabel.className = "fw-semibold text-danger";
+      return;
+    }
+
+    if (score === 3 || score === 4) {
+      strengthLabel.textContent = "Medium";
+      strengthLabel.className = "fw-semibold text-warning";
+      return;
+    }
+
+    strengthLabel.textContent = "Strong";
+    strengthLabel.className = "fw-semibold text-success";
+  }
+
   // Run once on page load
   toggleFields();
+  updatePasswordStrength();
+  document.getElementById("password").addEventListener("input", updatePasswordStrength);
 </script>
 
 <%- include("partials/footer") %>
